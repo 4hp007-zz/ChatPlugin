@@ -1,19 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package ChatPlugin;
 
 import java.io.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
-/**
- *
- * @author 4hp007
- */
 public class FileHandle {
     
     File f;  
@@ -28,8 +18,7 @@ public class FileHandle {
     void insert(String ip,String data){
         
         try {
-            fr = new FileReader(f);
-            
+            fr = new FileReader(f);            
             parse = new JSONParser();
             jobj = (JSONObject)parse.parse(fr);
             jobj.put(ip, data);

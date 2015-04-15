@@ -17,14 +17,14 @@ import org.gudy.azureus2.ui.swt.plugins.*;
 public class Chat implements Plugin {
 
     ArrayList<Peer> block = new ArrayList<>();
-    HashMap<Peer, ChatWindow> hm = new HashMap<>();                      
+    HashMap<Peer, ChatWindow> hm = new HashMap<>();
     FileHandle f;
     UISWTInstance swtui;
     private static Formatters formatters = null;
 
     @Override
     public void initialize(final PluginInterface pi) throws PluginException {
-                
+
         pi.getUIManager().addUIListener(new UIManagerListener() {
 
             @Override
@@ -33,22 +33,21 @@ public class Chat implements Plugin {
                 if (instance instanceof UISWTInstance) {
                     swtui = (UISWTInstance) instance;
                 }
-            }         
+            }
+
             @Override
             public void UIDetached(UIInstance instance) {
             }
         });
         f = new FileHandle("chats.json");
-        
-        
-        
+
         formatters = pi.getUtilities().getFormatters();
-        TableContextMenuItem tm = pi.getUIManager().getTableManager().addContextMenuItem(TableManager.TABLE_TORRENT_PEERS, "New Chat");              
+        TableContextMenuItem tm = pi.getUIManager().getTableManager().addContextMenuItem(TableManager.TABLE_TORRENT_PEERS, "New Chat");
         try {
-            pi.getMessageManager().registerMessageType(new NewMessage(""));          
+            pi.getMessageManager().registerMessageType(new NewMessage(""));
         } catch (MessageException ex) {
 
-            System.err.println("peer error");            
+            System.err.println("peer error");
 
         }
 
@@ -63,22 +62,21 @@ public class Chat implements Plugin {
                     public boolean messageReceived(Message message) {
                         if (message.getID().equals("CHAT")) {
                             if (block.contains(peer))
-                                return true;                                                                                                                       
-                            final NewMessage nm = (NewMessage) message;                            
+                                return true;
+                            final NewMessage nm = (NewMessage) message;
                             if (hm.containsKey(peer)) {
                                 if (hm.get(peer).isDisposed()) {
-                                    
-                                    UIInstance ui = (UIInstance)swtui;                                
-                                String[] op = {"Chat","Block"};
-                                int l =ui.promptUser("New Chat", "Chat Invitation from "+peer.getIp(), op , 0);                                                               
-                                if (l == 1) {
-                                    block.add(peer);
-                                    peer.getConnection().getOutgoingMessageQueue().sendMessage(new NewMessage("code:21215311")); 
-                                    return true;
-                                }
-                                else if(l==-1){
-                                    return true;
-                                }
+
+                                    UIInstance ui = (UIInstance) swtui;
+                                    String[] op = {"Chat", "Block"};
+                                    int l = ui.promptUser("New Chat", "Chat Invitation from " + peer.getIp(), op, 0);
+                                    if (l == 1) {
+                                        block.add(peer);
+                                        peer.getConnection().getOutgoingMessageQueue().sendMessage(new NewMessage("code:21215311"));
+                                        return true;
+                                    } else if (l == -1) {
+                                        return true;
+                                    }
 
                                     swtui.getDisplay().asyncExec(new Runnable() {
 
@@ -86,7 +84,7 @@ public class Chat implements Plugin {
                                         public void run() {
 
                                             hm.get(peer).run(swtui.createShell(1), nm.receive());
-                                            
+
                                         }
 
                                     });
@@ -95,16 +93,15 @@ public class Chat implements Plugin {
 
                                 }
                             } else {
-                                hm.put(peer, new ChatWindow(peer,f));
-                                UIInstance ui = (UIInstance)swtui;                                
-                                String[] op = {"Chat","Block"};
-                                int l =ui.promptUser("New Chat", "Chat Invitation from "+peer.getIp(), op , 0);                                                               
+                                hm.put(peer, new ChatWindow(peer, f));
+                                UIInstance ui = (UIInstance) swtui;
+                                String[] op = {"Chat", "Block"};
+                                int l = ui.promptUser("New Chat", "Chat Invitation from " + peer.getIp(), op, 0);
                                 if (l == 1) {
                                     block.add(peer);
-                                    peer.getConnection().getOutgoingMessageQueue().sendMessage(new NewMessage("code:21215311")); 
+                                    peer.getConnection().getOutgoingMessageQueue().sendMessage(new NewMessage("code:21215311"));
                                     return true;
-                                }
-                                else if(l==-1){
+                                } else if (l == -1) {
                                     return true;
                                 }
                                 swtui.getDisplay().asyncExec(new Runnable() {
@@ -138,7 +135,7 @@ public class Chat implements Plugin {
             public void selected(MenuItem menu, Object target) {
 
                 TableRow rw = (TableRow) target;
-                final Peer peer = (Peer) rw.getDataSource();                
+                final Peer peer = (Peer) rw.getDataSource();
                 if (hm.containsKey(peer)) {
                     if (hm.get(peer).isDisposed()) {
                         swtui.getDisplay().asyncExec(new Runnable() {
@@ -155,7 +152,7 @@ public class Chat implements Plugin {
                     hm.get(peer).shell.forceActive();
                 } else {
 
-                    hm.put(peer, new ChatWindow(peer,f));
+                    hm.put(peer, new ChatWindow(peer, f));
                     swtui.getDisplay().asyncExec(new Runnable() {
 
                         @Override

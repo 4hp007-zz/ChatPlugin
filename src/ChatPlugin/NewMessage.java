@@ -78,7 +78,7 @@ public class NewMessage implements Message{
       String text1 = new String((byte[])mMessage.get("t"));
       return new NewMessage(text1);  
     } catch(Exception e) {
-      throw new MessageException( "devcode error" );
+      throw new MessageException( "decode error" );
     }
     }
 
