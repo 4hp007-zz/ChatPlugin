@@ -40,22 +40,18 @@ public class Chat implements Plugin {
             }
         });
         f = new FileHandle("chats.json");
-
         formatters = pi.getUtilities().getFormatters();
         TableContextMenuItem tm = pi.getUIManager().getTableManager().addContextMenuItem(TableManager.TABLE_TORRENT_PEERS, "New Chat");
         try {
             pi.getMessageManager().registerMessageType(new NewMessage(""));
         } catch (MessageException ex) {
-
             System.err.println("peer error");
-
         }
-
         pi.getMessageManager().locateCompatiblePeers(pi, new NewMessage(""), new MessageManagerListener() {
 
             @Override
             public void compatiblePeerFound(Download download, final Peer peer, Message message) {
-
+                
                 peer.getConnection().getIncomingMessageQueue().registerListener(new IncomingMessageQueueListener() {
 
                     @Override
@@ -66,7 +62,6 @@ public class Chat implements Plugin {
                             final NewMessage nm = (NewMessage) message;
                             if (hm.containsKey(peer)) {
                                 if (hm.get(peer).isDisposed()) {
-
                                     UIInstance ui = (UIInstance) swtui;
                                     String[] op = {"Chat", "Block"};
                                     int l = ui.promptUser("New Chat", "Chat Invitation from " + peer.getIp(), op, 0);
@@ -77,23 +72,18 @@ public class Chat implements Plugin {
                                     } else if (l == -1) {
                                         return true;
                                     }
-
                                     swtui.getDisplay().asyncExec(new Runnable() {
 
                                         @Override
                                         public void run() {
-
                                             hm.get(peer).run(swtui.createShell(1), nm.receive());
-
                                         }
-
                                     });
                                 } else {
                                     hm.get(peer).update(nm.receive());
-
                                 }
                             } else {
-                                hm.put(peer, new ChatWindow(peer, f));
+                                hm.put(peer, new ChatWindow(peer, f, pi));
                                 UIInstance ui = (UIInstance) swtui;
                                 String[] op = {"Chat", "Block"};
                                 int l = ui.promptUser("New Chat", "Chat Invitation from " + peer.getIp(), op, 0);
@@ -116,17 +106,13 @@ public class Chat implements Plugin {
                         }
                         return false;
                     }
-
                     @Override
                     public void bytesReceived(int byte_count) {
                     }
                 });
-
             }
-
             @Override
-            public void peerRemoved(Download download, Peer peer) {
-
+            public void peerRemoved(Download download, Peer peer) {                
             }
         });
         tm.addListener(new MenuItemListener() {
@@ -142,32 +128,25 @@ public class Chat implements Plugin {
 
                             @Override
                             public void run() {
-
                                 hm.get(peer).run(swtui.createShell(1), null);
-
                             }
-
                         });
                     }
                     hm.get(peer).shell.forceActive();
                 } else {
 
-                    hm.put(peer, new ChatWindow(peer, f));
+                    hm.put(peer, new ChatWindow(peer, f, pi));
                     swtui.getDisplay().asyncExec(new Runnable() {
 
                         @Override
                         public void run() {
 
                             hm.get(peer).run(swtui.createShell(1), null);
-
                         }
-
                     });
                 }
             }
-
         });
-
     }
 
     public static byte[] bEncode(Map map) {
